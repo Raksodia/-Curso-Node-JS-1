@@ -18,13 +18,19 @@ app.get('/api/cursos/programacion', (req,res) => {
 app.get('/api/cursos/programacion/:lenguaje', (req,res) => {
     const lenguaje = req.params.lenguaje;
     const resultados = infoCursos.programacion.filter(curso => curso.lenguaje === lenguaje);
+
     console.log(lenguaje);
     
     if(resultados.length === 0){
         return res.status(404).send(`No se encontraron cursos de ${lenguaje}`);
     }
-    else
-        res.send(JSON.stringify(resultados));
+    
+    if(req.query.ordenar === 'vistas'){
+        //res.send(JSON.stringify(resultados.sort( (a, b)=> a.vistas - b.vistas)));//ascendente
+        res.send(JSON.stringify(resultados.sort( (a, b)=> b.vistas - a.vistas)));//descendente
+    }
+
+    res.send(JSON.stringify(resultados));
 });
 
 app.get('/api/cursos/programacion/:lenguaje/:nivel', (req,res) => {
