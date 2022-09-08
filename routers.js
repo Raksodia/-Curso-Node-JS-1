@@ -10,23 +10,48 @@ app.use('/api/cursos/programacion', routerProgramacion);
 const routerMatematicas = express.Router();
 app.use('/api/cursos/matematicas',routerMatematicas);
 
-//routing
-app.get('/', (req,res) => {
-    res.send('Mi servidor con Express');
-});
-
-app.get('/api/cursos', (req,res) => {
-    res.send(JSON.stringify(infoCursos));
-});
-
-//router
+/////////////////////////////////
+/////////////////////////////////
+//Routers
 routerProgramacion.get('/', (req,res) => {
     res.send(JSON.stringify(infoCursos.programacion));
 });
 
+routerMatematicas.get('/', (req,res) => {
+    res.send(JSON.stringify(infoCursos.matematicas));
+});
+
+/////////////////////////////////
+/////////////////////////////////
+//Express Path
+
+//home
+app.get('/', (req,res) => {
+    res.send('Mi servidor con Express');
+});
+
+//cursos
+app.get('/api/cursos', (req,res) => {
+    res.send(JSON.stringify(infoCursos));
+});
+
+//matematicas
+app.get('/api/cursos/matematicas/:tema', (req,res) => {
+    const tema = req.params.tema;
+    const resultados = infoCursos.matematicas.filter(curso => curso.tema === tema);
+    console.log(tema);
+    
+    if(resultados.length === 0){
+        return res.status(404).send(`No se encontraron cursos de ${tema}`);
+    }
+    else
+        res.send(JSON.stringify(resultados));
+});
+
+//programacion
 app.get('/api/cursos/programacion/:lenguaje', (req,res) => {
     const lenguaje = req.params.lenguaje;
-    const resultados = infoCursos.programacion.filter(curso => curso.lenguaje === lenguaje);
+    const resultados = infoCursos.programacion.filter(curso => curso.language === lenguaje);
 
     console.log(lenguaje);
     
@@ -45,7 +70,7 @@ app.get('/api/cursos/programacion/:lenguaje', (req,res) => {
 app.get('/api/cursos/programacion/:lenguaje/:nivel', (req,res) => {
     const lenguaje = req.params.lenguaje;
     const nivel = req.params.nivel;
-    const resultados = infoCursos.programacion.filter(curso => curso.lenguaje === lenguaje && curso.nivel === nivel);
+    const resultados = infoCursos.programacion.filter(curso => curso.language === lenguaje && curso.nivel === nivel);
     console.log(lenguaje);
     console.log(nivel);
     if(resultados.length === 0){
@@ -55,21 +80,8 @@ app.get('/api/cursos/programacion/:lenguaje/:nivel', (req,res) => {
         res.send(JSON.stringify(resultados));
 });
 
-routerMatematicas.get('/', (req,res) => {
-    res.send(JSON.stringify(infoCursos.matematicas));
-});
-
-app.get('/api/cursos/matematicas/:tema', (req,res) => {
-    const tema = req.params.tema;
-    const resultados = infoCursos.matematicas.filter(curso => curso.tema === tema);
-    console.log(tema);
-    
-    if(resultados.length === 0){
-        return res.status(404).send(`No se encontraron cursos de ${tema}`);
-    }
-    else
-        res.send(JSON.stringify(resultados));
-});
+/////////////////////////////////
+/////////////////////////////////
 
 const puerto = process.env.PORT || 3000;
 app.listen(puerto, () => {
